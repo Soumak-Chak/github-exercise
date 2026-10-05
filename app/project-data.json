@@ -1,0 +1,36 @@
+{
+  "projects": [
+    {
+      "name": "Atlas onboarding",
+      "owner": "Mona Patel",
+      "status": "On track",
+      "recentActivity": "Published the revised first-run flow for team review.",
+      "priority": "High",
+      "summary": "Help new contributors make their first useful contribution with less setup friction."
+    },
+    {
+      "name": "Signals API",
+      "owner": "Jordan Lee",
+      "status": "At risk",
+      "recentActivity": "Partner review surfaced a gap in the event-retention requirements.",
+      "priority": "High",
+      "summary": "Deliver a dependable events API for product analytics and internal reporting."
+    },
+    {
+      "name": "Component library",
+      "owner": "Avery Chen",
+      "status": "On track",
+      "recentActivity": "Keyboard and screen-reader checks passed for the new navigation patterns.",
+      "priority": "Medium",
+      "summary": "Make accessible, consistent interface patterns easier to ship across team products."
+    },
+    {
+      "name": "Release notes refresh",
+      "owner": "Sam Rivera",
+      "status": "Blocked",
+      "recentActivity": "Waiting on the content model decision before implementation can resume.",
+      "priority": "Low",
+      "summary": "Give customers concise, useful updates with a simpler publishing workflow."
+    }
+  ]
+}

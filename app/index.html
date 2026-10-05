@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A clear view of project ownership, status, activity, and priority.">
+    <title>Project Pulse</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="dashboard">
+      <header class="dashboard-header">
+        <div>
+          <p class="dashboard-kicker">Team overview</p>
+          <h1>Project Pulse</h1>
+          <p>See what is moving, who is leading, and where the team needs to focus.</p>
+        </div>
+      </header>
+
+      <section aria-label="Projects">
+        <p id="project-state" role="status" aria-live="polite">Loading projects...</p>
+        <div id="project-grid" class="project-grid" aria-label="Project cards"></div>
+      </section>
+    </main>
+
+    <script>
+      const state = document.querySelector("#project-state");
+      const projectGrid = document.querySelector("#project-grid");
+      const requiredFields = ["name", "owner", "status", "recentActivity", "priority"];
+
+      function addTextElement(parent, tagName, className, text) {
+        const element = document.createElement(tagName);
+        element.className = className;
+        element.textContent = text;
+        parent.append(element);
+        return element;
+      }
+
+      function renderProject(project) {
+        const card = document.createElement("article");
+        card.className = "project-card";
+
+        const header = document.createElement("header");
+        addTextElement(header, "h2", "project-name", project.name);
+
+        const statusClass = project.status.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+        const status = addTextElement(header, "span", `status-badge status-badge--${statusClass}`, `Status: ${project.status}`);
+        status.dataset.status = statusClass;
+        card.append(header);
+
+        addTextElement(card, "p", "project-owner", `Owner: ${project.owner}`);
+        addTextElement(card, "p", "project-summary", project.summary || "No summary provided.");
+
+        const priorityClass = project.priority.toLowerCase();
+        const priority = addTextElement(card, "p", `priority priority--${priorityClass}`, `Priority: ${project.priority}`);
+        priority.dataset.priority = priorityClass;
+
+        const activity = document.createElement("p");
+        activity.className = "recent-activity";
+        const label = document.createElement("strong");
+        label.textContent = "Recent activity: ";
+        activity.append(label, document.createTextNode(project.recentActivity));
+        card.append(activity);
+
+        projectGrid.append(card);
+      }
+
+      async function loadProjects() {
+        try {
+          const response = await fetch("project-data.json");
+          if (!response.ok) {
+            throw new Error(`Project data request failed (${response.status}).`);
+          }
+
+          const data = await response.json();
+          if (!Array.isArray(data.projects)) {
+            throw new Error("Project data must contain a projects array.");
+          }
+
+          if (data.projects.length === 0) {
+            state.textContent = "No projects to show yet.";
+            return;
+          }
+
+          const invalidProject = data.projects.find((project) =>
+            !project || requiredFields.some((field) => typeof project[field] !== "string" || !project[field].trim())
+          );
+          if (invalidProject) {
+            throw new Error("One or more projects are missing required information.");
+          }
+
+          data.projects.forEach(renderProject);
+          state.textContent = `${data.projects.length} projects`;
+        } catch (error) {
+          state.textContent = `Projects could not be loaded. ${error.message}`;
+        }
+      }
+
+      loadProjects();
+    </script>
+  </body>
+</html>
